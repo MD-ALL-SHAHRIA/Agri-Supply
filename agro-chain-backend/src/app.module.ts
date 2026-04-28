@@ -14,6 +14,7 @@ import { UploadModule } from './upload/upload.module';
 import { EventsModule } from './events/events.module';
 import { BullModule } from '@nestjs/bullmq';
 import { QueuesModule } from './queues/queues.module';
+import { LogisticsModule } from './logistics/logistics.module';
 
 @Module({
   imports: [
@@ -72,7 +73,8 @@ import { QueuesModule } from './queues/queues.module';
     PaymentsModule,
     UploadModule,
     EventsModule,
-    QueuesModule
+    QueuesModule,
+    LogisticsModule
   ],
 })
 export class AppModule {}
