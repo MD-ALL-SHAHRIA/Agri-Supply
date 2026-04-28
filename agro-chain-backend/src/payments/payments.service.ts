@@ -9,6 +9,7 @@ import { OrderStatus } from '../common/enums/order-status.enum';
 import { LotStatus } from '../common/enums/lot-status.enum';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
+import { NotificationsProducer } from '../queues/producers/notifications.producer';
 
 @Injectable()
 export class PaymentsService {
@@ -19,6 +20,7 @@ export class PaymentsService {
     private readonly paymentRepository: Repository<Payment>,
     private readonly dataSource: DataSource,
     private configService: ConfigService,
+    private notificationsProducer: NotificationsProducer,
   ) {
     
     this.redisClient = new Redis({
@@ -106,6 +108,8 @@ export class PaymentsService {
       
       if (isLotSold) {
         await this.redisClient.del('live_market_lots');
+        
+        await this.notificationsProducer.sendPaymentSuccessEmail(payment.buyer_id, payment.order_id);
       }
 
       return { message: 'পেমেন্ট সফল হয়েছে এবং লটটি এখন SOLD হিসেবে গণ্য হবে!', transaction_id: transactionId };

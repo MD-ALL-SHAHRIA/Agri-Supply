@@ -12,6 +12,8 @@ import { OrdersModule } from './orders/orders.module';
 import { PaymentsModule } from './payments/payments.module';
 import { UploadModule } from './upload/upload.module';
 import { EventsModule } from './events/events.module';
+import { BullModule } from '@nestjs/bullmq';
+import { QueuesModule } from './queues/queues.module';
 
 @Module({
   imports: [
@@ -50,6 +52,17 @@ import { EventsModule } from './events/events.module';
       }),
     }),
 
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        connection: {
+          host: configService.get<string>('REDIS_HOST'),
+          port: configService.get<number>('REDIS_PORT'),
+        },
+      }),
+    }),
+
     ScheduleModule.forRoot(),
 
     AuthModule,
@@ -58,7 +71,8 @@ import { EventsModule } from './events/events.module';
     OrdersModule,
     PaymentsModule,
     UploadModule,
-    EventsModule
+    EventsModule,
+    QueuesModule
   ],
 })
 export class AppModule {}
