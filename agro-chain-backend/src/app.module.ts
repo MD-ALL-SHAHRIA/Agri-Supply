@@ -11,6 +11,7 @@ import { InventoryModule } from './inventory/inventory.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentsModule } from './payments/payments.module';
 import { UploadModule } from './upload/upload.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -56,7 +57,8 @@ import { UploadModule } from './upload/upload.module';
     InventoryModule,
     OrdersModule,
     PaymentsModule,
-    UploadModule
+    UploadModule,
+    EventsModule
   ],
 })
 export class AppModule {}

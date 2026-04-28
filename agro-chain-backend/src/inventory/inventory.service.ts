@@ -7,6 +7,7 @@ import { CreateLotDto } from './dto/create-lot.dto';
 import { ConfigService } from '@nestjs/config';
 import { LotStatus } from '../common/enums/lot-status.enum';
 import Redis from 'ioredis';
+import { EventsGateway } from '../events/events.gateway';
 
 @Injectable()
 export class InventoryService {
@@ -16,6 +17,7 @@ export class InventoryService {
     @InjectRepository(Lot)
     private readonly lotRepository: Repository<Lot>,
     private configService: ConfigService,
+    private eventsGateway: EventsGateway,
   ) {
     this.redisClient = new Redis({
       host: this.configService.get<string>('REDIS_HOST'),
@@ -106,6 +108,9 @@ export class InventoryService {
       where: { status: LotStatus.AVAILABLE },
       order: { created_at: 'DESC' },
     });
+
     await this.redisClient.set('live_market_lots', JSON.stringify(lots), 'EX', 60);
+
+    this.eventsGateway.broadcastMarketUpdate(lots);
   }
 }
